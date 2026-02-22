@@ -1,69 +1,68 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-LRVZLJFVRB"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-  gtag('config', 'G-LRVZLJFVRB');
-</script>
   <meta charset="UTF-8">
-  <title>Movie Archive</title>
+  <title>Movie Archive | Cyber Edition</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css?v=10">
+
+  <!-- Cyber Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="scanlines"></div>
-
-<header>
-  <h1 class="glitch" data-text="MOVIE ARCHIVE">MOVIE ARCHIVE</h1>
-  <p class="subtitle">watched • rated • remembered</p>
-  <p class="creator">MADE BY <span>ROHIT SHEORAN</span></p>
-</header>
-
-<div class="controls">
-  <div class="tabs">
-    <button class="tab active" onclick="setTab('popular', this)">Popular</button>
-    <button class="tab" onclick="setTab('top_rated', this)">Top Rated</button>
-    <button class="tab" onclick="setTab('upcoming', this)">Upcoming</button>
-    <button class="tab" onclick="setTab('discover', this)">Discover</button>
-  </div>
-
-  <input id="searchInput" placeholder="Search movies..."
-         onkeydown="if(event.key==='Enter') searchMovies()">
-
-  <div class="filters">
-    <input type="number" id="yearFilter" placeholder="Year">
-    <input type="number" id="ratingFilter" placeholder="Min ⭐">
-    <select id="genreFilter">
-      <option value="">Genre</option>
-    </select>
-    <button onclick="applyFilters()">Apply</button>
-  </div>
-</div>
-
-<main id="movies"></main>
-
-<!-- PLAYER MODAL (KEPT) -->
-<div id="playerModal" class="player-modal">
-  <div class="player-box">
-    <span class="close-btn" onclick="closePlayer()">✕</span>
-    <div class="player-wrapper">
-      <iframe id="videasyPlayer"
-        src=""
-        frameborder="0"
-        allowfullscreen
-        allow="encrypted-media">
-      </iframe>
+<header class="topbar">
+  <div class="logo-area">
+    <h1 class="logo">MOVIE ARCHIVE</h1>
+    <div class="meta">
+      <span>Created by <strong>ROHIT SHEROAN</strong></span>
+      <span class="version">v2.0 – Cyber Upgrade</span>
     </div>
   </div>
+
+  <div class="toggle-area">
+    <button id="movieBtn" class="active">Movies</button>
+    <button id="tvBtn">Web Series</button>
+  </div>
+</header>
+
+<section class="controls">
+  <input type="text" id="searchInput" placeholder="Search in the archive...">
+  <select id="genreSelect">
+    <option value="">Genre</option>
+  </select>
+  <input type="number" id="yearInput" placeholder="Year">
+</section>
+
+<main>
+  <section id="hero" class="hero"></section>
+
+  <section class="row-section">
+    <h2 class="section-title">Results</h2>
+    <div id="popularRow" class="row"></div>
+  </section>
+</main>
+
+<!-- PLAYER -->
+<div id="playerModal" class="modal">
+  <div class="modal-box player-box">
+    <span id="closePlayer">✕</span>
+    <iframe id="playerFrame" allowfullscreen></iframe>
+  </div>
 </div>
 
-<script src="script.js?v=10"></script>
+<!-- SERIES -->
+<div id="seriesModal" class="modal">
+  <div class="modal-box series-box">
+    <span id="closeSeries">✕</span>
+    <h2 id="seriesTitle"></h2>
+    <div id="seasonTabs" class="season-tabs"></div>
+    <div id="episodeGrid" class="episode-grid"></div>
+  </div>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
 
