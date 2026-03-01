@@ -1,77 +1,676 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-LRVZLJFVRB"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+<meta charset="UTF-8">
+<title>Sheoran Movies | Cyber OTT</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  gtag('config', 'G-LRVZLJFVRB');
-      </script>
-  <meta charset="UTF-8">
-  <title>Movie Archive | Cyber Edition</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&display=swap" rel="stylesheet">
 
-  <!-- Cyber Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Orbitron',sans-serif;background:black;color:white}
 
-  <link rel="stylesheet" href="style.css">
+/* HEADER */
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:20px;
+  background:#000;
+  border-bottom:1px solid cyan;
+}
+
+.logo{
+  color:cyan;
+  font-size:20px;
+  text-shadow:0 0 10px cyan;
+}
+
+button{
+  padding:6px 12px;
+  background:black;
+  border:1px solid cyan;
+  color:cyan;
+  cursor:pointer;
+  margin-left:5px;
+  transition:.3s;
+}
+
+button:hover{
+  box-shadow:0 0 10px cyan,0 0 20px cyan;
+  transform:scale(1.05);
+}
+
+/* HERO */
+.hero{
+  height:60vh;
+  background-size:cover;
+  background-position:center;
+  display:flex;
+  align-items:flex-end;
+  padding:30px;
+  position:relative;
+}
+
+.hero::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(to top,black 40%,transparent);
+}
+
+.hero-content{position:relative;z-index:2}
+.hero button{margin-top:10px;padding:8px 15px;background:cyan;color:black;border:none}
+
+/* ROW */
+.row{display:flex;gap:15px;padding:20px;overflow-x:auto}
+.row img{
+  width:150px;
+  border-radius:8px;
+  cursor:pointer;
+  transition:.3s;
+}
+.row img:hover{
+  transform:scale(1.1);
+  box-shadow:0 0 15px cyan,0 0 30px magenta;
+}
+
+/* ACTIVITY */
+.activity{padding:20px}
+.activity-card{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+.activity-card img{width:50px;border-radius:6px}
+
+/* SECTIONS */
+.section{display:none;padding:40px;animation:fade .3s ease}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:black;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+}
+
+.modal.active{display:flex}
+.modal iframe{width:100vw;height:100vh;border:none}
+.close{position:absolute;top:20px;right:20px;font-size:25px;color:magenta;cursor:pointer}
+
+.login-box{
+  background:#000;
+  border:2px solid cyan;
+  padding:30px;
+  width:300px;
+  text-align:center;
+}
+.login-box input{width:100%;padding:8px;margin:10px 0}
+
+/* SERIES */
+#seriesControls{padding:20px;display:none}
+select{
+  padding:6px;
+  background:black;
+  color:cyan;
+  border:1px solid cyan;
+  margin-right:10px;
+}
+
+/* ================= MOBILE PERFECT UI ================= */
+
+@media (max-width: 768px){
+
+  body{
+    overflow-x:hidden;
+  }
+
+  /* HEADER */
+  .topbar{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:12px;
+    padding:15px;
+  }
+
+  .topbar div{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  button{
+    font-size:12px;
+    padding:6px 10px;
+  }
+
+  /* SEARCH BAR */
+  #searchInput{
+    width:100% !important;
+  }
+
+  #genreSelect{
+    width:100%;
+  }
+
+  /* HERO */
+  .hero{
+    height:45vh;
+    padding:20px;
+  }
+
+  .hero-content h1{
+    font-size:20px;
+  }
+
+  .hero button{
+    padding:6px 12px;
+    font-size:12px;
+  }
+
+  /* ROW CARDS */
+  .row{
+    gap:12px;
+    padding:15px;
+    scroll-behavior:smooth;
+  }
+
+  .row img{
+    width:120px;
+    flex-shrink:0;
+  }
+
+  /* PROFILE */
+  #profileSection{
+    padding:20px;
+  }
+
+  #avatarImg{
+    width:100px;
+  }
+
+  /* SEARCH FILTER CONTAINER */
+  body > div[style]{
+    flex-direction:column !important;
+    align-items:stretch !important;
+  }
+
+}
+</style>
 </head>
+
 <body>
 
 <header class="topbar">
-  <div class="logo-area">
-    <h1 class="logo">MOVIE ARCHIVE</h1>
-    <div class="meta">
-      <span>Created by <strong>ROHIT SHEROAN</strong></span>
-      <span class="version">v2.0 – Cyber Upgrade</span>
-    </div>
-  </div>
-
-  <div class="toggle-area">
-    <button id="movieBtn" class="active">Movies</button>
+  <div class="logo">🎬 SHEORAN MOVIES</div>
+  <div>
+    <button id="movieBtn">Movies</button>
     <button id="tvBtn">Web Series</button>
+    <button id="homeBtn" style="display:none">Home</button>
+    <button id="profileBtn" style="display:none">Profile</button>
+    <button id="logoutBtn" style="display:none">Logout</button>
   </div>
 </header>
+<!-- SEARCH + FILTER BAR -->
+<div style="padding:15px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
 
-<section class="controls">
-  <input type="text" id="searchInput" placeholder="Search in the archive...">
+  <input 
+    type="text" 
+    id="searchInput" 
+    placeholder="Search movies or series..."
+    style="padding:8px;width:220px;background:black;color:cyan;border:1px solid cyan"
+  >
+
   <select id="genreSelect">
-    <option value="">Genre</option>
+    <option value="">All Categories</option>
   </select>
-  <input type="number" id="yearInput" placeholder="Year">
-</section>
 
-<main>
+  <button id="searchBtn">Search</button>
+
+</div>
+
+<div id="homeSection" class="section" style="display:block">
   <section id="hero" class="hero"></section>
 
-  <section class="row-section">
-    <h2 class="section-title">Results</h2>
-    <div id="popularRow" class="row"></div>
-  </section>
-</main>
+  <div id="seriesControls">
+    <select id="seasonSelect"></select>
+    <select id="episodeSelect"></select>
+    <button id="playEpisodeBtn">Play Episode</button>
+  </div>
 
-<!-- PLAYER -->
+  <h2 style="padding-left:20px">Results</h2>
+  <div id="popularRow" class="row"></div>
+
+  <h2 style="padding-left:20px">Live Activity</h2>
+  <div id="activityFeed" class="activity"></div>
+</div>
+
+<div id="profileSection" class="section">
+  <h2>My Profile</h2>
+  <img id="avatarImg" src="https://i.imgur.com/6VBx3io.png" width="120" style="border-radius:50%">
+<div style="display:flex;align-items:center;gap:10px;">
+  <h3 id="usernameDisplay"></h3>
+  <button id="editUsernameBtn">Edit</button>
+</div>
+
+<input type="text" id="usernameInput" 
+       style="display:none;margin-top:6px;padding:6px;background:black;color:cyan;border:1px solid cyan;">
+
+<button id="saveUsernameBtn" style="display:none;margin-top:6px;">
+  Save
+</button>
+
+<p id="userEmail"></p>
+
+<br>
+
+<input type="file" id="avatarInput" style="display:none">
+<button id="changeDpBtn">Change DP</button>
+<button id="saveDpBtn" style="display:none">Save DP</button>
+  <h3>Total Watched: <span id="totalWatched">0</span></h3>
+  <h3>Unique Movies: <span id="uniqueWatched">0</span></h3>
+  <div id="posterGrid" class="row"></div>
+</div>
+
+<div id="publicSection" class="section">
+  <h2 id="publicUsername"></h2>
+  <div id="publicGrid" class="row"></div>
+</div>
+
 <div id="playerModal" class="modal">
-  <div class="modal-box player-box">
-    <span id="closePlayer">✕</span>
-    <iframe id="playerFrame" allowfullscreen></iframe>
+  <span class="close" onclick="closePlayer()">✕</span>
+  <iframe id="playerFrame" allowfullscreen></iframe>
+</div>
+
+<div id="loginModal" class="modal active">
+  <div class="login-box">
+    <h2>Login</h2>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="signup()">Signup</button>
+    <button onclick="login()">Login</button>
   </div>
 </div>
 
-<!-- SERIES -->
-<div id="seriesModal" class="modal">
-  <div class="modal-box series-box">
-    <span id="closeSeries">✕</span>
-    <h2 id="seriesTitle"></h2>
-    <div id="seasonTabs" class="season-tabs"></div>
-    <div id="episodeGrid" class="episode-grid"></div>
-  </div>
-</div>
+<script type="module">
 
-<script src="script.js"></script>
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut }
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, limit, getDocs,
+doc, getDoc, setDoc, updateDoc, increment }
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig={apiKey:"AIzaSyAjTeA-mHOQCBghqL4UhYTMVvl7csVgmMU",
+authDomain:"movie-b0fb1.firebaseapp.com",
+projectId:"movie-b0fb1",
+storageBucket:"movie-b0fb1.firebasestorage.app",
+messagingSenderId:"661798847864",
+appId:"1:661798847864:web:343a62b1b573e4e208348d"};
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+let cacheData = {};
+let currentSeriesTitle="";
+let currentSeriesPoster="";
+let currentUser=null;
+let currentType="movie";
+let currentSeriesId=null;
+const API_KEY="d5585837c92af34f108abad6a1e84115";
+
+/* AUTH */
+window.signup=()=>createUserWithEmailAndPassword(auth,email.value,password.value);
+window.login=()=>signInWithEmailAndPassword(auth,email.value,password.value);
+logoutBtn.onclick=()=>signOut(auth);
+
+onAuthStateChanged(auth,user=>{
+if(user){
+currentUser=user;
+loginModal.classList.remove("active");
+profileBtn.style.display="inline-block";
+logoutBtn.style.display="inline-block";
+loadPopular();
+loadActivity();
+}else loginModal.classList.add("active");
+});
+
+/* SECTION CONTROL */
+function showHome(){
+homeSection.style.display="block";
+profileSection.style.display="none";
+publicSection.style.display="none";
+seriesControls.style.display="none";
+}
+
+homeBtn.onclick=showHome;
+profileBtn.onclick = async () => {
+
+  showHome();
+  homeSection.style.display = "none";
+  profileSection.style.display = "block";
+
+  if (!currentUser) return;
+
+  posterGrid.innerHTML = "";
+  let total = 0;
+  let unique = 0;
+
+  const snap = await getDocs(
+    collection(db, "users", currentUser.uid, "watchHistory")
+  );
+
+  snap.forEach(docSnap => {
+    const data = docSnap.data();
+    unique++;
+    total += data.watchCount || 1;
+
+    const img = document.createElement("img");
+    img.src = data.poster;
+    posterGrid.appendChild(img);
+  });
+
+  totalWatched.innerText = total;
+  uniqueWatched.innerText = unique;
+
+  const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+  const userData = userDoc.data() || {};
+
+  usernameDisplay.innerText = userData.username || "User";
+  userEmail.innerText = currentUser.email;
+
+  if (userData.avatar) {
+    avatarImg.src = userData.avatar;
+  }
+  /* ================= PROFILE EDIT ================= */
+
+editUsernameBtn.onclick = ()=>{
+  usernameInput.style.display="block";
+  saveUsernameBtn.style.display="inline-block";
+  usernameInput.value=usernameDisplay.innerText;
+};
+
+saveUsernameBtn.onclick = async ()=>{
+
+  const newName = usernameInput.value.trim();
+  if(!newName) return;
+
+  await setDoc(
+    doc(db,"users",currentUser.uid),
+    { username:newName },
+    { merge:true }
+  );
+
+  usernameDisplay.innerText=newName;
+
+  usernameInput.style.display="none";
+  saveUsernameBtn.style.display="none";
+};
+
+/* ================= CHANGE DP FIXED ================= */
+
+changeDpBtn.onclick = () => {
+  avatarInput.click();
+};
+
+avatarInput.onchange = () => {
+  const file = avatarInput.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = async function (e) {
+
+    const imageData = e.target.result;
+
+    try {
+
+      await setDoc(
+        doc(db, "users", currentUser.uid),
+        { avatar: imageData },
+        { merge: true }
+      );
+
+      avatarImg.src = imageData;   // show immediately
+      alert("DP Updated Successfully");
+
+    } catch (err) {
+      console.error("DP Save Error:", err);
+      alert("Error saving DP");
+    }
+
+  };
+
+  reader.readAsDataURL(file);
+};
+};
+async function loadGenres(){
+  const res = await fetch(
+    `https://api.themoviedb.org/3/genre/${currentType}/list?api_key=${API_KEY}`
+  );
+  const data = await res.json();
+
+  genreSelect.innerHTML = `<option value="">All Categories</option>`;
+
+  data.genres.forEach(g=>{
+    genreSelect.innerHTML += 
+      `<option value="${g.id}">${g.name}</option>`;
+  });
+}
+searchBtn.onclick = async ()=>{
+
+  const query = searchInput.value.trim();
+  const genre = genreSelect.value;
+
+  let url = "";
+
+  if(query){
+    url = `https://api.themoviedb.org/3/search/${currentType}?api_key=${API_KEY}&query=${query}`;
+  }else if(genre){
+    url = `https://api.themoviedb.org/3/discover/${currentType}?api_key=${API_KEY}&with_genres=${genre}`;
+  }else{
+    loadPopular();
+    return;
+  }
+
+  const res = await fetch(url);
+  const data = await res.json();
+  renderResults(data.results);
+};
+/* MOVIE / TV */
+movieBtn.onclick=()=>{
+showHome();
+currentType="movie";
+loadGenres();      // 🔥 add this
+loadPopular();
+};
+
+tvBtn.onclick=()=>{
+showHome();
+currentType="tv";
+loadGenres();      // 🔥 add this
+loadPopular();
+};
+
+tvBtn.onclick=()=>{
+showHome();
+currentType="tv";
+loadPopular();
+};
+
+/* LOAD */
+async function loadPopular(){
+
+if(cacheData[currentType]){
+  renderResults(cacheData[currentType]);
+  loadHero(cacheData[currentType][0]);
+  return;
+}
+
+const res = await fetch(
+  `https://api.themoviedb.org/3/${currentType}/top_rated?api_key=${API_KEY}`
+);
+
+const data = await res.json();
+
+cacheData[currentType] = data.results;
+
+renderResults(data.results);
+loadHero(data.results[0]);
+
+}
+
+function loadHero(item){
+hero.style.backgroundImage=`url(https://image.tmdb.org/t/p/w780${item.backdrop_path})`;
+hero.innerHTML=`<div class="hero-content">
+<h1>${item.title||item.name}</h1>
+<button onclick="openMain(${item.id},'${item.title||item.name}','${item.poster_path}')">Play</button>
+</div>`;
+}
+
+function renderResults(items){
+popularRow.innerHTML="";
+items.forEach(item=>{
+if(!item.poster_path) return;
+const img=document.createElement("img");
+img.src=`https://image.tmdb.org/t/p/w300${item.poster_path}`;
+img.onclick=()=>openMain(item.id,item.title||item.name,item.poster_path);
+popularRow.appendChild(img);
+});
+}
+
+/* OPEN */
+window.openMain=async function(id,title,poster){
+if(currentType==="movie"){
+playerFrame.src=`https://player.videasy.net/movie/${id}`;
+playerModal.classList.add("active");
+saveWatch(id,title,poster);
+}else{
+currentSeriesId=id;
+currentSeriesTitle=title;      // 🔥 store series name
+currentSeriesPoster=poster;    // 🔥 store correct poster
+await loadSeasons(id);
+seriesControls.style.display="block";
+}
+};
+
+window.closePlayer=()=>{
+playerFrame.src="";
+playerModal.classList.remove("active");
+};
+
+/* SERIES */
+async function loadSeasons(id){
+const res=await fetch(`https://api.themoviedb.org/3/tv/${id}?api_key=${API_KEY}`);
+const data=await res.json();
+seasonSelect.innerHTML="";
+data.seasons.forEach(s=>{
+if(s.season_number===0) return;
+seasonSelect.innerHTML+=`<option value="${s.season_number}">Season ${s.season_number}</option>`;
+});
+loadEpisodes(id,seasonSelect.value);
+}
+
+seasonSelect.onchange=()=>loadEpisodes(currentSeriesId,seasonSelect.value);
+
+async function loadEpisodes(id,season){
+const res=await fetch(`https://api.themoviedb.org/3/tv/${id}/season/${season}?api_key=${API_KEY}`);
+const data=await res.json();
+episodeSelect.innerHTML="";
+data.episodes.forEach(ep=>{
+episodeSelect.innerHTML+=`<option value="${ep.episode_number}">Ep ${ep.episode_number} - ${ep.name}</option>`;
+});
+}
+
+playEpisodeBtn.onclick=async ()=>{
+
+playerFrame.src=`https://player.videasy.net/tv/${currentSeriesId}/${seasonSelect.value}/${episodeSelect.value}`;
+playerModal.classList.add("active");
+
+const season = seasonSelect.value;
+const episode = episodeSelect.value;
+
+/* 🔥 SAVE WITH SERIES NAME + REAL POSTER */
+saveWatch(
+  currentSeriesId,
+  `${currentSeriesTitle} - S${season}E${episode}`,
+  currentSeriesPoster,
+  "tv"
+);
+
+};
+
+/* WATCH */
+async function saveWatch(id,title,poster,type="movie"){
+
+if(!currentUser) return;
+
+const posterUrl=`https://image.tmdb.org/t/p/w500${poster}`;
+const ref=doc(db,"users",currentUser.uid,"watchHistory",id.toString());
+const snap=await getDoc(ref);
+
+if(snap.exists()){
+  await updateDoc(ref,{
+    watchCount:increment(1),
+    lastWatched:serverTimestamp()
+  });
+}else{
+  await setDoc(ref,{
+    contentId:id,
+    title,
+    poster:posterUrl,
+    type:type,   // 🔥 movie OR tv
+    watchCount:1,
+    lastWatched:serverTimestamp()
+  });
+}
+
+await addDoc(collection(db,"globalActivity"),{
+  userId:currentUser.uid,
+  contentId:id,
+  title,
+  poster:posterUrl,
+  type:type,
+  watchedAt:serverTimestamp()
+});
+
+loadActivity();
+}
+
+/* ACTIVITY */
+async function loadActivity(){
+const q=query(collection(db,"globalActivity"),orderBy("watchedAt","desc"),limit(5));
+const snap=await getDocs(q);
+activityFeed.innerHTML="";
+for(const d of snap.docs){
+const data=d.data();
+let username="User";
+const userDoc=await getDoc(doc(db,"users",data.userId));
+if(userDoc.exists()) username=userDoc.data().username||"User";
+const div=document.createElement("div");
+div.className="activity-card";
+div.innerHTML=`<img src="${data.poster}">
+<div><strong style="color:cyan;cursor:pointer">${username}</strong> watched ${data.title}</div>`;
+div.querySelector("strong").onclick=()=>showPublicProfile(data.userId);
+activityFeed.appendChild(div);
+}
+}
+
+async function showPublicProfile(uid){
+showHome();
+homeSection.style.display="none";
+publicSection.style.display="block";
+const userDoc=await getDoc(doc(db,"users",uid));
+publicUsername.innerText=userDoc.data()?.username||"User";
+const snap=await getDocs(collection(db,"users",uid,"watchHistory"));
+publicGrid.innerHTML="";
+snap.forEach(d=>{
+publicGrid.innerHTML+=`<img src="${d.data().poster}">`;
+});
+}
+
+</script>
 </body>
 </html>
 
