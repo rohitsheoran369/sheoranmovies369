@@ -224,6 +224,83 @@ background-position:center;
 filter:blur(8px) brightness(40%);
 z-index:-1;
 }
+.login-box button{
+margin-top:6px;
+}
+
+.google-btn{
+background:#db4437;
+border:none;
+color:white;
+padding:8px 12px;
+cursor:pointer;
+}
+.google-btn{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:10px;
+width:100%;
+padding:10px;
+margin-top:12px;
+background:white;
+color:black;
+border:none;
+border-radius:6px;
+cursor:pointer;
+font-weight:600;
+transition:.3s;
+}
+
+.google-btn img{
+width:18px;
+}
+
+.google-btn:hover{
+transform:scale(1.05);
+box-shadow:0 0 10px #00ffff;
+}
+.auth-buttons{
+display:flex;
+gap:10px;
+margin-top:10px;
+justify-content:center;
+}
+
+.auth-buttons button{
+padding:8px 16px;
+border:none;
+cursor:pointer;
+font-weight:600;
+border-radius:6px;
+transition:0.3s;
+}
+
+/* SIGNUP BUTTON */
+
+.signup-btn{
+background:transparent;
+border:1px solid cyan;
+color:cyan;
+}
+
+.signup-btn:hover{
+background:cyan;
+color:black;
+box-shadow:0 0 10px cyan;
+}
+
+/* LOGIN BUTTON */
+
+.login-btn{
+background:#E50914;
+color:white;
+}
+
+.login-btn:hover{
+transform:scale(1.05);
+box-shadow:0 0 10px #E50914;
+}
 /* ================= MOBILE PERFECT UI ================= */
 
 @media (max-width: 768px){
@@ -391,22 +468,43 @@ placeholder="Search movies or series..."
 </div>
 
 <div id="loginModal" class="modal active">
-  <div class="login-box">
-  <h2>Login</h2>
+<div class="login-box">
 
-  <p class="creator">Creator :} Rohit Sheoran</p>
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="signup()">Signup</button>
-    <button onclick="login()">Login</button>
-  </div>
+<h2>Login</h2>
+<p class="creator">Creator : Rohit Sheoran</p>
+
+<input type="email" id="email" placeholder="Email">
+<input type="password" id="password" placeholder="Password">
+
+<div class="auth-buttons">
+
+<button class="signup-btn" onclick="signup()">Signup</button>
+<button class="login-btn" onclick="login()">Login</button>
+
+</div>
+<br><br>
+
+<button class="google-btn" onclick="googleLogin()">
+<img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png">
+Sign in with Google
+</button>
+
+</div>
 </div>
 
 <script type="module">
 
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut }
+import { 
+getAuth, 
+signInWithEmailAndPassword, 
+createUserWithEmailAndPassword, 
+onAuthStateChanged, 
+signOut,
+GoogleAuthProvider,
+signInWithPopup
+}
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, limit, getDocs,
 doc, getDoc, setDoc, updateDoc, increment }
@@ -476,6 +574,36 @@ loadPopular();
 loadActivity();
 }else loginModal.classList.add("active");
 });
+const provider = new GoogleAuthProvider();
+
+window.googleLogin = async () => {
+
+try{
+
+const result = await signInWithPopup(auth, provider);
+const user = result.user;
+
+/* SAVE USER DATA */
+
+await setDoc(
+doc(db,"users",user.uid),
+{
+username:user.displayName,
+avatar:user.photoURL,
+email:user.email
+},
+{merge:true}
+);
+
+console.log("Google login success");
+
+}catch(err){
+
+console.log(err);
+
+}
+
+};
 
 /* SECTION CONTROL */
 function showHome(){
@@ -522,7 +650,7 @@ profileBtn.onclick = async () => {
   userEmail.innerText = currentUser.email;
 
   if (userData.avatar) {
-    avatarImg.src = userData.avatar;
+    avatarImg.src = userData.avatar || currentUser.photoURL;
   }
   /* ================= PROFILE EDIT ================= */
 
@@ -822,6 +950,7 @@ publicGrid.innerHTML+=`<img src="${d.data().poster}">`;
 </script>
 </body>
 </html>
+
 
 
 
