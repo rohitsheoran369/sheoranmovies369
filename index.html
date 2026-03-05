@@ -301,6 +301,56 @@ color:white;
 transform:scale(1.05);
 box-shadow:0 0 10px #E50914;
 }
+/* CHAT SYSTEM */
+
+#chatBox{
+position:fixed;
+bottom:0;
+right:0;
+width:280px;
+height:350px;
+background:black;
+border:1px solid cyan;
+display:flex;
+flex-direction:column;
+z-index:999;
+}
+
+#chatMessages{
+flex:1;
+overflow-y:auto;
+padding:10px;
+font-size:13px;
+}
+
+.chat-msg{
+margin-bottom:6px;
+}
+
+.chat-user{
+color:cyan;
+font-weight:600;
+}
+
+#chatInputArea{
+display:flex;
+border-top:1px solid cyan;
+}
+
+#chatInput{
+flex:1;
+background:black;
+border:none;
+color:white;
+padding:8px;
+}
+
+#sendBtn{
+background:cyan;
+border:none;
+padding:8px;
+cursor:pointer;
+}
 /* ================= MOBILE PERFECT UI ================= */
 
 @media (max-width: 768px){
@@ -385,6 +435,17 @@ box-shadow:0 0 10px #E50914;
 </head>
 
 <body>
+  <!-- LIVE CHAT -->
+<div id="chatBox">
+
+<div id="chatMessages"></div>
+
+<div id="chatInputArea">
+<input id="chatInput" placeholder="Type message...">
+<button id="sendBtn">Send</button>
+</div>
+
+</div>
 <div id="loginBg"></div>
 
 <header class="topbar">
@@ -494,28 +555,45 @@ Sign in with Google
 
 <script type="module">
 
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { 
-getAuth, 
-signInWithEmailAndPassword, 
-createUserWithEmailAndPassword, 
-onAuthStateChanged, 
+
+import {
+getAuth,
+signInWithEmailAndPassword,
+createUserWithEmailAndPassword,
+onAuthStateChanged,
 signOut,
 GoogleAuthProvider,
 signInWithPopup
 }
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, limit, getDocs,
-doc, getDoc, setDoc, updateDoc, increment }
+
+import {
+getFirestore,
+collection,
+addDoc,
+serverTimestamp,
+query,
+orderBy,
+limit,
+getDocs,
+doc,
+getDoc,
+setDoc,
+updateDoc,
+increment,
+onSnapshot
+}
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const firebaseConfig={apiKey:"AIzaSyAjTeA-mHOQCBghqL4UhYTMVvl7csVgmMU",
+const firebaseConfig = {
+apiKey:"AIzaSyAjTeA-mHOQCBghqL4UhYTMVvl7csVgmMU",
 authDomain:"movie-b0fb1.firebaseapp.com",
 projectId:"movie-b0fb1",
 storageBucket:"movie-b0fb1.firebasestorage.app",
 messagingSenderId:"661798847864",
-appId:"1:661798847864:web:343a62b1b573e4e208348d"};
+appId:"1:661798847864:web:343a62b1b573e4e208348d"
+};
 
 const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
@@ -527,7 +605,62 @@ let currentUser=null;
 let currentType="movie";
 let currentSeriesId=null;
 const API_KEY="d5585837c92af34f108abad6a1e84115";
+function startChat(){
+
+const q = query(
+collection(db,"globalChat"),
+orderBy("time","asc")
+);
+
+onSnapshot(q,(snapshot)=>{
+
+chatMessages.innerHTML="";
+
+snapshot.forEach(doc=>{
+
+const data = doc.data();
+
+const div = document.createElement("div");
+div.className="chat-msg";
+
+div.innerHTML = `
+<span class="chat-user">${data.username}:</span>
+${data.message}
+`;
+
+chatMessages.appendChild(div);
+
+});
+
+chatMessages.scrollTop = chatMessages.scrollHeight;
+
+});
+
+}
+sendBtn.onclick = async ()=>{
+
+if(!currentUser) return;
+
+const msg = chatInput.value.trim();
+if(!msg) return;
+
+const userDoc = await getDoc(doc(db,"users",currentUser.uid));
+const username = userDoc.data()?.username || "User";
+
+await addDoc(collection(db,"globalChat"),{
+
+userId:currentUser.uid,
+username:username,
+message:msg,
+time:serverTimestamp()
+
+});
+
+chatInput.value="";
+
+};
 /* LOGIN BACKGROUND */
+
 async function loadLoginBackground(){
 
 try{
@@ -572,6 +705,7 @@ profileBtn.style.display="inline-block";
 logoutBtn.style.display="inline-block";
 loadPopular();
 loadActivity();
+startChat();   // start live chat
 }else loginModal.classList.add("active");
 });
 const provider = new GoogleAuthProvider();
@@ -582,7 +716,39 @@ try{
 
 const result = await signInWithPopup(auth, provider);
 const user = result.user;
+function startChat(){
 
+const q = query(
+collection(db,"globalChat"),
+orderBy("time","asc"),
+limit(50)
+);
+
+onSnapshot(q,(snapshot)=>{
+
+chatMessages.innerHTML="";
+
+snapshot.forEach(docSnap=>{
+
+const data = docSnap.data();
+
+const div=document.createElement("div");
+div.className="chat-msg";
+
+div.innerHTML=`
+<span class="chat-user">${data.username || "User"}:</span>
+${data.message}
+`;
+
+chatMessages.appendChild(div);
+
+});
+
+chatMessages.scrollTop = chatMessages.scrollHeight;
+
+});
+
+}
 /* SAVE USER DATA */
 
 await setDoc(
@@ -950,6 +1116,7 @@ publicGrid.innerHTML+=`<img src="${d.data().poster}">`;
 </script>
 </body>
 </html>
+
 
 
 
