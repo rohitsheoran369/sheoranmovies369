@@ -697,16 +697,34 @@ window.signup=()=>createUserWithEmailAndPassword(auth,email.value,password.value
 window.login=()=>signInWithEmailAndPassword(auth,email.value,password.value);
 logoutBtn.onclick=()=>signOut(auth);
 
-onAuthStateChanged(auth,user=>{
+onAuthStateChanged(auth, async (user)=>{
+
 if(user){
+
+const userRef = doc(db,"users",user.uid);
+const snap = await getDoc(userRef);
+
+if(!snap.exists()){
+await setDoc(userRef,{
+username:"User",
+email:user.email,
+createdAt:serverTimestamp()
+});
+}
+
 currentUser=user;
 loginModal.classList.remove("active");
 profileBtn.style.display="inline-block";
 logoutBtn.style.display="inline-block";
+
 loadPopular();
 loadActivity();
-startChat();   // start live chat
-}else loginModal.classList.add("active");
+startChat();
+
+}else{
+loginModal.classList.add("active");
+}
+
 });
 const provider = new GoogleAuthProvider();
 
@@ -1116,6 +1134,7 @@ publicGrid.innerHTML+=`<img src="${d.data().poster}">`;
 </script>
 </body>
 </html>
+
 
 
 
