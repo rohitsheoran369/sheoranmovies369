@@ -1,72 +1,176 @@
-# 🎬 Sheoran Movies | Cyber OTT
+# ⚡ SHEORAN MOVIES – CYBER OTT
 
-Sheoran Movies is a cyber-style OTT web application that allows users to watch movies and web series online with a modern UI and community features.
-
-Created by **Rohit Sheoran**
-
----
-
-## 🚀 Features
-
-- 🔐 Firebase Authentication  
-  - Email / Password login  
-  - Google Login  
-
-- 🎥 Movie & Web Series Streaming  
-  - Uses TMDB API for movie data  
-  - Videasy player for streaming  
-
-- 🔎 Smart Search System  
-  - Search movies and series  
-  - Filter by genre  
-
-- 👤 User Profiles  
-  - Custom username  
-  - Profile picture upload  
-  - Watch history tracking  
-
-- 📊 Watch Statistics  
-  - Total watched content  
-  - Unique movies watched  
-
-- 🌍 Global Activity Feed  
-  - Shows what other users are watching  
-
-- 💬 Live Chat System  
-  - Global chat between users  
-  - Real-time updates using Firebase  
-
-- 📱 Mobile Responsive UI  
+<p align="center">
+<img src="https://img.shields.io/badge/STATUS-ACTIVE-00ff9c?style=for-the-badge">
+<img src="https://img.shields.io/badge/CREATOR-Rohit%20Sheoran-00ffff?style=for-the-badge">
+<img src="https://img.shields.io/badge/TECH-JavaScript%20%7C%20Firebase%20%7C%20TMDB-black?style=for-the-badge">
+</p>
 
 ---
 
-## 🛠 Tech Stack
+## 🧠 Project Overview
 
-Frontend:
-- HTML
-- CSS
-- JavaScript
+**Sheoran Movies** is a cyber-style OTT streaming platform that allows users to:
 
-Backend / Services:
-- Firebase Authentication
-- Firebase Firestore
-- TMDB API
+* Watch movies and web series
+* Chat with other users live
+* Track watch history
+* View community activity
+
+The project uses **TMDB API for movie data** and **Firebase for authentication and real-time database**.
 
 ---
 
-## 📦 APIs Used
+## ⚡ Core Features
 
-TMDB API  
+### 🎬 Movie & Series Streaming
+
+* Search movies and TV series
+* Genre filtering
+* Instant streaming player
+* Episode selector for web series
+
+### 🔐 Authentication System
+
+* Email / Password login
+* Google login
+* Firebase authentication
+
+### 👤 User Profiles
+
+* Custom username
+* Profile picture upload
+* Watch history tracking
+* Unique movie statistics
+
+### 🌍 Community Activity
+
+Users can see:
+
+```
+Rohit watched Interstellar
+Alex watched Breaking Bad S2E3
+```
+
+This is stored in **Firebase Firestore**.
+
+### 💬 Global Live Chat
+
+A real-time chat system where users can communicate.
+
+Features:
+
+* Instant message updates
+* Username display
+* Firebase real-time listener
+
+---
+
+## 🧩 Tech Stack
+
+Frontend
+
+* HTML
+* CSS
+* JavaScript
+
+Backend / Services
+
+* Firebase Authentication
+* Firebase Firestore
+
+APIs
+
+* TMDB API
+* Videasy streaming player
+
+---
+
+## 📂 Project Structure
+
+```
+project
+│
+├── index.html
+├── README.md
+```
+
+Everything runs in a **single page application style**.
+
+---
+
+## ⚙️ Installation
+
+Clone the repository:
+
+```
+git clone https://github.com/yourusername/sheoran-movies.git
+```
+
+Open the folder and run:
+
+```
+index.html
+```
+
+Or use **VS Code Live Server**.
+
+---
+
+## 🔑 API Setup
+
+Create a TMDB account
+
 https://www.themoviedb.org/
 
-Movie streaming player  
-https://player.videasy.net/
+Get your API key and replace:
+
+```
+const API_KEY = "YOUR_API_KEY"
+```
 
 ---
 
-## ⚙️ Setup
+## 🔥 Screenshots
 
-1. Clone the project
+Add screenshots of:
 
-```bash
-git clone https://github.com/yourusername/sheoran-movies.git
+* Home page
+* Movie player
+* Chat system
+* Profile system
+
+Example:
+
+```
+/screenshots/home.png
+/screenshots/chat.png
+/screenshots/profile.png
+/Screenshot 2026-03-07 123939
+/Screenshot 2026-03-07 123806
+```
+
+---
+
+## 👨‍💻 Creator
+
+**Rohit Sheoran**
+
+Cyber developer
+Builder of weird tech projects
+
+---
+
+## ⚠️ Disclaimer
+
+This project is for **educational purposes only**.
+
+Movie data comes from **TMDB API**.
+
+Streaming links are external.
+
+---
+
+<p align="center">
+⚡ Built in Cyber Style ⚡
+</p>
