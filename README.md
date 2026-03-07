@@ -133,24 +133,26 @@ const API_KEY = "YOUR_API_KEY"
 
 ## 🔥 Screenshots
 
-Add screenshots of:
+## 🔥 Screenshots
 
-* Home page
-* Movie player
-* Chat system
-* Profile system
+### Home Page
 
-Example:
+![Home](screenshotshome.png.png)
 
-```
-/screenshots/home.png
-/screenshots/chat.png
-/screenshots/profile.png
-/Screenshot 2026-03-07 123939
-/Screenshot 2026-03-07 123806
-```
+### Chat System
 
----
+![Chat](screenshotschat.png.png)
+
+### Profile Page
+
+![Profile](screenshotsprofile.png.png)
+
+### UI Preview
+
+![UI](Screenshot%202026-03-07%20123806.png)
+
+![UI2](Screenshot%202026-03-07%20123939.png)
+
 
 ## 👨‍💻 Creator
 
