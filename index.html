@@ -351,6 +351,35 @@ border:none;
 padding:8px;
 cursor:pointer;
 }
+#chatHeader{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:6px 10px;
+background:#050505;
+border-bottom:1px solid cyan;
+font-size:13px;
+}
+
+#closeChatBtn{
+background:none;
+border:none;
+color:cyan;
+cursor:pointer;
+font-size:16px;
+}
+
+#openChatBtn{
+position:fixed;
+bottom:10px;
+right:10px;
+background:cyan;
+border:none;
+padding:8px 14px;
+cursor:pointer;
+z-index:998;
+display:none;
+}
 /* ================= MOBILE PERFECT UI ================= */
 
 @media (max-width: 768px){
@@ -435,8 +464,16 @@ cursor:pointer;
 </head>
 
 <body>
-  <!-- LIVE CHAT -->
+<!-- CHAT OPEN BUTTON -->
+<button id="openChatBtn">Chat</button>
+
+<!-- CHAT BOX -->
 <div id="chatBox">
+
+<div id="chatHeader">
+<span>Live Chat (<span id="onlineCount">0</span>)</span>
+<button id="closeChatBtn">✕</button>
+</div>
 
 <div id="chatMessages"></div>
 
@@ -445,6 +482,7 @@ cursor:pointer;
 <button id="sendBtn">Send</button>
 </div>
 
+</div>
 </div>
 <div id="loginBg"></div>
 
@@ -554,6 +592,19 @@ Sign in with Google
 </div>
 
 <script type="module">
+  const chatBox = document.getElementById("chatBox");
+const openChatBtn = document.getElementById("openChatBtn");
+const closeChatBtn = document.getElementById("closeChatBtn");
+
+closeChatBtn.onclick = () => {
+  chatBox.style.display = "none";
+  openChatBtn.style.display = "block";
+};
+
+openChatBtn.onclick = () => {
+  chatBox.style.display = "flex";
+  openChatBtn.style.display = "none";
+};
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 
@@ -581,6 +632,7 @@ doc,
 getDoc,
 setDoc,
 updateDoc,
+deleteDoc,
 increment,
 onSnapshot
 }
@@ -605,6 +657,27 @@ let currentUser=null;
 let currentType="movie";
 let currentSeriesId=null;
 const API_KEY="d5585837c92af34f108abad6a1e84115";
+function trackOnlineUsers(){
+
+const userStatusRef = doc(db,"onlineUsers",currentUser.uid);
+
+setDoc(userStatusRef,{
+uid:currentUser.uid,
+online:true,
+time:serverTimestamp()
+});
+
+/* remove when tab closes */
+window.addEventListener("beforeunload",()=>{
+deleteDoc(userStatusRef);
+});
+
+/* listen to online count */
+onSnapshot(collection(db,"onlineUsers"),(snapshot)=>{
+onlineCount.innerText = snapshot.size;
+});
+
+}
 function startChat(){
 
 const q = query(
@@ -720,6 +793,7 @@ logoutBtn.style.display="inline-block";
 loadPopular();
 loadActivity();
 startChat();
+trackOnlineUsers();
 
 }else{
 loginModal.classList.add("active");
@@ -1134,6 +1208,8 @@ publicGrid.innerHTML+=`<img src="${d.data().poster}">`;
 </script>
 </body>
 </html>
+
+
 
 
 
