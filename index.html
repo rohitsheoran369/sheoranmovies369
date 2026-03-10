@@ -357,35 +357,6 @@ body{
   overflow:hidden;
   position:relative;
 }
-.player-modal .section-title{
-  padding:16px 20px 8px;
-  border-top:1px solid rgba(255,255,255,.06);
-  margin-top:6px;
-}
-.player-modal #similarRowModal{
-  padding:8px 20px 20px;
-}
-
-/* Make modal similar / collection rows smaller and scrollable */
-.player-modal #similarRowModal,
-.player-modal #collectionRowModal{
-  overflow-x:auto;
-  scrollbar-width:thin;
-}
-.player-modal #similarRowModal .card img,
-.player-modal #collectionRowModal .card img{
-  width:110px;
-  height:165px;
-}
-.player-modal #similarRowModal::-webkit-scrollbar,
-.player-modal #collectionRowModal::-webkit-scrollbar{
-  height:6px;
-}
-.player-modal #similarRowModal::-webkit-scrollbar-thumb,
-.player-modal #collectionRowModal::-webkit-scrollbar-thumb{
-  background:rgba(148,163,184,.85);
-  border-radius:999px;
-}
 .player-modal iframe{
   width:100%;
   aspect-ratio:16/9;
@@ -1107,10 +1078,6 @@ body{
   <div class="player-box">
     <span class="close" onclick="closePlayer()">✕</span>
     <iframe id="playerFrame" allowfullscreen></iframe>
-    <h2 class="section-title"><span class="section-bar"></span>Similar Movies</h2>
-    <div id="similarRowModal" class="row"></div>
-    <h2 class="section-title"><span class="section-bar"></span>Collection</h2>
-    <div id="collectionRowModal" class="row"></div>
   </div>
 </div>
 
@@ -1508,21 +1475,14 @@ async function loadSimilarMovies(movieId){
 
 function renderSimilarMovies(items){
   const mainRow=document.getElementById("similarRow");
-  const modalRow=document.getElementById("similarRowModal");
 
   if(mainRow){
     mainRow.innerHTML="";
-  }
-  if(modalRow){
-    modalRow.innerHTML="";
   }
 
   if(!items||!items.length){
     if(mainRow){
       mainRow.innerHTML="<p style='color:var(--text-muted)'>No similar movies found.</p>";
-    }
-    if(modalRow){
-      modalRow.innerHTML="<p style='color:var(--text-muted)'>No similar movies found.</p>";
     }
     return;
   }
@@ -1538,16 +1498,6 @@ function renderSimilarMovies(items){
       card.onclick=()=>openMain(item.id,item.title||item.name,item.poster_path);
       card.appendChild(img);
       mainRow.appendChild(card);
-    }
-
-    if(modalRow){
-      const card=document.createElement("div");
-      card.className="card";
-      const img=document.createElement("img");
-      img.src=`https://image.tmdb.org/t/p/w300${item.poster_path}`;
-      card.onclick=()=>openMain(item.id,item.title||item.name,item.poster_path);
-      card.appendChild(img);
-      modalRow.appendChild(card);
     }
   });
 }
@@ -1573,14 +1523,11 @@ async function loadCollection(movieId){
 
 function renderCollectionMovies(items){
   const mainRow=document.getElementById("collectionRow");
-  const modalRow=document.getElementById("collectionRowModal");
 
   if(mainRow){ mainRow.innerHTML=""; }
-  if(modalRow){ modalRow.innerHTML=""; }
 
   if(!items||!items.length){
     if(mainRow){ mainRow.innerHTML="<p style='color:var(--text-muted)'>No collection found.</p>"; }
-    if(modalRow){ modalRow.innerHTML="<p style='color:var(--text-muted)'>No collection found.</p>"; }
     return;
   }
 
@@ -1596,15 +1543,6 @@ function renderCollectionMovies(items){
         card.onclick=()=>openMain(item.id,item.title||item.name,item.poster_path);
         card.appendChild(img);
         mainRow.appendChild(card);
-      }
-      if(modalRow){
-        const card=document.createElement("div");
-        card.className="card";
-        const img=document.createElement("img");
-        img.src=`https://image.tmdb.org/t/p/w300${item.poster_path}`;
-        card.onclick=()=>openMain(item.id,item.title||item.name,item.poster_path);
-        card.appendChild(img);
-        modalRow.appendChild(card);
       }
     });
 }
@@ -1826,6 +1764,7 @@ window.nativeGoogleTokens = async (idToken, email, name, photoUrl) => {
 </script>
 </body>
 </html>
+
 
 
 
