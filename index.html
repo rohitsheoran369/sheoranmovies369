@@ -30,7 +30,7 @@ html{
 }
 body{
   font-family:var(--font);
-  background:var(--bg);
+  background:radial-gradient(circle at top,#0b1f15 0,#070a08 55%,#020403 100%);
   color:var(--text);
   min-height:100vh;
   min-height:100dvh;
@@ -356,6 +356,35 @@ body{
   border-radius:var(--radius);
   overflow:hidden;
   position:relative;
+}
+.player-modal .section-title{
+  padding:16px 20px 8px;
+  border-top:1px solid rgba(255,255,255,.06);
+  margin-top:6px;
+}
+.player-modal #similarRowModal{
+  padding:8px 20px 20px;
+}
+
+/* Make modal similar / collection rows smaller and scrollable */
+.player-modal #similarRowModal,
+.player-modal #collectionRowModal{
+  overflow-x:auto;
+  scrollbar-width:thin;
+}
+.player-modal #similarRowModal .card img,
+.player-modal #collectionRowModal .card img{
+  width:110px;
+  height:165px;
+}
+.player-modal #similarRowModal::-webkit-scrollbar,
+.player-modal #collectionRowModal::-webkit-scrollbar{
+  height:6px;
+}
+.player-modal #similarRowModal::-webkit-scrollbar-thumb,
+.player-modal #collectionRowModal::-webkit-scrollbar-thumb{
+  background:rgba(148,163,184,.85);
+  border-radius:999px;
 }
 .player-modal iframe{
   width:100%;
@@ -684,6 +713,40 @@ body{
   flex-shrink:0;
 }
 
+/* ===== DESKTOP ENHANCEMENTS ===== */
+@media (min-width:1024px){
+  .app-header,
+  .type-toggles,
+  #homeSection,
+  #profileSection,
+  #publicSection{
+    max-width:1120px;
+    margin:0 auto;
+  }
+
+  #homeSection{
+    margin-bottom:88px;
+  }
+
+  .hero{
+    border-radius:24px;
+    margin-top:18px;
+  }
+
+  .row{
+    padding-inline:0;
+  }
+
+  .activity{
+    padding-inline:0;
+  }
+
+  .player-modal .player-box{
+    max-width:1120px;
+    border-radius:24px;
+  }
+}
+
 /* ===== MOBILE RESPONSIVE ===== */
 @media (max-width:768px){
   body{
@@ -996,6 +1059,12 @@ body{
 
   <h2 class="section-title"><span class="section-bar"></span>Live Activity</h2>
   <div id="activityFeed" class="activity"></div>
+  <!-- Similar Movies section -->
+  <h2 class="section-title"><span class="section-bar"></span>Similar Movies</h2>
+  <div id="similarRow" class="row"></div>
+  <!-- Collection section -->
+  <h2 class="section-title"><span class="section-bar"></span>Collection</h2>
+  <div id="collectionRow" class="row"></div>
 </div>
 
 <div id="profileSection" class="section">
@@ -1018,6 +1087,15 @@ body{
   <div id="posterGrid" class="row"></div>
 </div>
 
+<div id="collectionSection" class="section">
+  <h2 id="collectionTitle">Collections</h2>
+  <div id="collectionsGrid" class="row"></div>
+  <h2 class="section-title" id="selectedCollectionHeading" style="display:none;">
+    <span class="section-bar"></span><span id="selectedCollectionTitle"></span>
+  </h2>
+  <div id="selectedCollectionRow" class="row"></div>
+</div>
+
 <div id="publicSection" class="section">
   <h2 id="publicUsername"></h2>
   <div id="publicGrid" class="row"></div>
@@ -1027,6 +1105,10 @@ body{
   <div class="player-box">
     <span class="close" onclick="closePlayer()">✕</span>
     <iframe id="playerFrame" allowfullscreen></iframe>
+    <h2 class="section-title"><span class="section-bar"></span>Similar Movies</h2>
+    <div id="similarRowModal" class="row"></div>
+    <h2 class="section-title"><span class="section-bar"></span>Collection</h2>
+    <div id="collectionRowModal" class="row"></div>
   </div>
 </div>
 
@@ -1051,6 +1133,10 @@ body{
   <button class="nav-item active" id="homeNavBtn">
     <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
     <span>Home</span>
+  </button>
+  <button class="nav-item" id="collectionNavBtn">
+    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="7" height="7"/><rect x="14" y="4" width="7" height="7"/><rect x="3" y="13" width="7" height="7"/><rect x="14" y="13" width="7" height="7"/></svg>
+    <span>Collection</span>
   </button>
   <button class="nav-item" id="profileNavBtn" style="display:none">
     <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
@@ -1124,6 +1210,13 @@ let currentUser=null;
 let currentType="movie";
 let currentSeriesId=null;
 const API_KEY="d5585837c92af34f108abad6a1e84115";
+// Some famous TMDB collections to always show on the Collection page
+const FEATURED_COLLECTIONS=[
+  { id:1241, name:"Harry Potter" },
+  { id:9485, name:"Fast & Furious" },
+  { id:119, name:"The Lord of the Rings" },
+  { id:263, name:"The Dark Knight" }
+];
 
 function trackOnlineUsers(){
   const userStatusRef=doc(db,"onlineUsers",currentUser.uid);
@@ -1183,6 +1276,7 @@ onAuthStateChanged(auth,async (user)=>{
   const loginModal=document.getElementById("loginModal");
   const profileNavBtn=document.getElementById("profileNavBtn");
   const logoutNavBtn=document.getElementById("logoutNavBtn");
+  const collectionNavBtn=document.getElementById("collectionNavBtn");
 
   if(user){
     const userRef=doc(db,"users",user.uid);
@@ -1194,6 +1288,7 @@ onAuthStateChanged(auth,async (user)=>{
     loginModal.classList.remove("active");
     profileNavBtn.style.display="flex";
     logoutNavBtn.style.display="flex";
+    collectionNavBtn.style.display="flex";
     openChatBtn.style.display="block";
     loadPopular();
     loadActivity();
@@ -1203,6 +1298,7 @@ onAuthStateChanged(auth,async (user)=>{
     loginModal.classList.add("active");
     profileNavBtn.style.display="none";
     logoutNavBtn.style.display="none";
+    collectionNavBtn.style.display="none";
   }
 });
 
@@ -1223,6 +1319,7 @@ function showHome(){
   document.getElementById("homeSection").classList.add("active");
   document.getElementById("profileSection").classList.remove("active");
   document.getElementById("publicSection").classList.remove("active");
+  document.getElementById("collectionSection").classList.remove("active");
   document.getElementById("seriesControls").style.display="none";
   document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
   document.getElementById("homeNavBtn").classList.add("active");
@@ -1231,11 +1328,22 @@ function showProfile(){
   document.getElementById("homeSection").classList.remove("active");
   document.getElementById("profileSection").classList.add("active");
   document.getElementById("publicSection").classList.remove("active");
+   document.getElementById("collectionSection").classList.remove("active");
   document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
   document.getElementById("profileNavBtn").classList.add("active");
 }
+function showCollection(){
+  document.getElementById("homeSection").classList.remove("active");
+  document.getElementById("profileSection").classList.remove("active");
+  document.getElementById("publicSection").classList.remove("active");
+  document.getElementById("collectionSection").classList.add("active");
+  document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
+  document.getElementById("collectionNavBtn").classList.add("active");
+  loadFeaturedCollections();
+}
 
 document.getElementById("homeNavBtn").onclick=showHome;
+document.getElementById("collectionNavBtn").onclick=showCollection;
 
 document.getElementById("profileNavBtn").onclick=async ()=>{
   showProfile();
@@ -1386,11 +1494,210 @@ function renderResults(items){
   });
 }
 
+async function loadSimilarMovies(movieId){
+  try{
+    const res=await fetch(`https://api.themoviedb.org/3/movie/${movieId}/similar?api_key=${API_KEY}`);
+    const data=await res.json();
+    renderSimilarMovies(data.results||[]);
+  }catch(err){
+    console.log("Similar error:",err);
+  }
+}
+
+function renderSimilarMovies(items){
+  const mainRow=document.getElementById("similarRow");
+  const modalRow=document.getElementById("similarRowModal");
+
+  if(mainRow){
+    mainRow.innerHTML="";
+  }
+  if(modalRow){
+    modalRow.innerHTML="";
+  }
+
+  if(!items||!items.length){
+    if(mainRow){
+      mainRow.innerHTML="<p style='color:var(--text-muted)'>No similar movies found.</p>";
+    }
+    if(modalRow){
+      modalRow.innerHTML="<p style='color:var(--text-muted)'>No similar movies found.</p>";
+    }
+    return;
+  }
+
+  items.slice(0,15).forEach(item=>{
+    if(!item.poster_path) return;
+
+    if(mainRow){
+      const card=document.createElement("div");
+      card.className="card";
+      const img=document.createElement("img");
+      img.src=`https://image.tmdb.org/t/p/w300${item.poster_path}`;
+      card.onclick=()=>openMain(item.id,item.title||item.name,item.poster_path);
+      card.appendChild(img);
+      mainRow.appendChild(card);
+    }
+
+    if(modalRow){
+      const card=document.createElement("div");
+      card.className="card";
+      const img=document.createElement("img");
+      img.src=`https://image.tmdb.org/t/p/w300${item.poster_path}`;
+      card.onclick=()=>openMain(item.id,item.title||item.name,item.poster_path);
+      card.appendChild(img);
+      modalRow.appendChild(card);
+    }
+  });
+}
+
+async function loadCollection(movieId){
+  try{
+    // First get movie details to see if it belongs to a collection
+    const detailsRes=await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${API_KEY}`);
+    const details=await detailsRes.json();
+    const col=details.belongs_to_collection;
+    if(!col||!col.id){
+      renderCollectionMovies([]);
+      return;
+    }
+    // Then fetch the full collection (all parts)
+    const res=await fetch(`https://api.themoviedb.org/3/collection/${col.id}?api_key=${API_KEY}`);
+    const data=await res.json();
+    renderCollectionMovies(data.parts||[]);
+  }catch(err){
+    console.log("Collection error:",err);
+  }
+}
+
+function renderCollectionMovies(items){
+  const mainRow=document.getElementById("collectionRow");
+  const modalRow=document.getElementById("collectionRowModal");
+
+  if(mainRow){ mainRow.innerHTML=""; }
+  if(modalRow){ modalRow.innerHTML=""; }
+
+  if(!items||!items.length){
+    if(mainRow){ mainRow.innerHTML="<p style='color:var(--text-muted)'>No collection found.</p>"; }
+    if(modalRow){ modalRow.innerHTML="<p style='color:var(--text-muted)'>No collection found.</p>"; }
+    return;
+  }
+
+  items
+    .filter(item=>item.poster_path)
+    .sort((a,b)=>(a.release_date||"").localeCompare(b.release_date||""))
+    .forEach(item=>{
+      if(mainRow){
+        const card=document.createElement("div");
+        card.className="card";
+        const img=document.createElement("img");
+        img.src=`https://image.tmdb.org/t/p/w300${item.poster_path}`;
+        card.onclick=()=>openMain(item.id,item.title||item.name,item.poster_path);
+        card.appendChild(img);
+        mainRow.appendChild(card);
+      }
+      if(modalRow){
+        const card=document.createElement("div");
+        card.className="card";
+        const img=document.createElement("img");
+        img.src=`https://image.tmdb.org/t/p/w300${item.poster_path}`;
+        card.onclick=()=>openMain(item.id,item.title||item.name,item.poster_path);
+        card.appendChild(img);
+        modalRow.appendChild(card);
+      }
+    });
+}
+
+async function loadFeaturedCollections(){
+  const grid=document.getElementById("collectionsGrid");
+  const title=document.getElementById("collectionTitle");
+  const selectedHeading=document.getElementById("selectedCollectionHeading");
+  const selectedRow=document.getElementById("selectedCollectionRow");
+  if(!grid) return;
+  if(title) title.innerText="Collections";
+  grid.innerHTML="";
+  if(selectedHeading){ selectedHeading.style.display="none"; }
+  if(selectedRow){ selectedRow.innerHTML=""; }
+
+  for(const col of FEATURED_COLLECTIONS){
+    const card=document.createElement("div");
+    card.className="card";
+
+    const img=document.createElement("img");
+    // Placeholder until we fetch a real poster
+    img.src="https://via.placeholder.com/140x200?text=Loading";
+    img.alt=col.name;
+
+    const label=document.createElement("div");
+    label.style.position="absolute";
+    label.style.left="8px";
+    label.style.right="8px";
+    label.style.bottom="8px";
+    label.style.padding="4px 6px";
+    label.style.borderRadius="8px";
+    label.style.background="linear-gradient(to top, rgba(0,0,0,.85), rgba(0,0,0,.0))";
+    label.style.fontSize=".8rem";
+    label.style.fontWeight="600";
+    label.style.color="#fff";
+    label.style.textShadow="0 2px 4px rgba(0,0,0,.7)";
+    label.textContent=col.name;
+
+    card.appendChild(img);
+    card.appendChild(label);
+    card.onclick=()=>openFeaturedCollection(col, img);
+    grid.appendChild(card);
+
+    // Fetch first poster for nicer card thumbnail (non-blocking)
+    try{
+      const res=await fetch(`https://api.themoviedb.org/3/collection/${col.id}?api_key=${API_KEY}`);
+      const data=await res.json();
+      const first=(data.parts||[]).find(p=>p.poster_path);
+      if(first && first.poster_path){
+        img.src=`https://image.tmdb.org/t/p/w300${first.poster_path}`;
+      }
+    }catch(err){
+      console.log("Featured collection thumb error:",err);
+    }
+  }
+}
+
+async function openFeaturedCollection(col,thumbImg){
+  const selectedHeading=document.getElementById("selectedCollectionHeading");
+  const selectedTitle=document.getElementById("selectedCollectionTitle");
+  const selectedRow=document.getElementById("selectedCollectionRow");
+  if(!selectedRow) return;
+
+  if(selectedHeading){ selectedHeading.style.display="flex"; }
+  if(selectedTitle){ selectedTitle.textContent=col.name; }
+  selectedRow.innerHTML="";
+
+  try{
+    const res=await fetch(`https://api.themoviedb.org/3/collection/${col.id}?api_key=${API_KEY}`);
+    const data=await res.json();
+    (data.parts||[])
+      .filter(item=>item.poster_path)
+      .sort((a,b)=>(a.release_date||"").localeCompare(b.release_date||""))
+      .forEach(item=>{
+        const card=document.createElement("div");
+        card.className="card";
+        const img=document.createElement("img");
+        img.src=`https://image.tmdb.org/t/p/w300${item.poster_path}`;
+        card.onclick=()=>openMain(item.id,item.title||item.name,item.poster_path);
+        card.appendChild(img);
+        selectedRow.appendChild(card);
+      });
+  }catch(err){
+    console.log("Featured collection open error:",err);
+    selectedRow.innerHTML="<p style='color:var(--text-muted)'>Unable to load this collection right now.</p>";
+  }
+}
+
 window.openMain=async function(id,title,poster){
   if(currentType==="movie"){
     document.getElementById("playerFrame").src=`https://player.videasy.net/movie/${id}`;
     document.getElementById("playerModal").classList.add("active");
     saveWatch(id,title,poster);
+    loadSimilarMovies(id);
+    loadCollection(id);
   }else{
     currentSeriesId=id;
     currentSeriesTitle=title;
@@ -1517,8 +1824,6 @@ window.nativeGoogleTokens = async (idToken, email, name, photoUrl) => {
 </script>
 </body>
 </html>
-
-
 
 
 
